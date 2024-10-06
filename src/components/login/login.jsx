@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from React Router v6
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import './Login.css'; // Import the CSS file
 
 const Login = () => {
@@ -25,8 +25,10 @@ const Login = () => {
             if (response.ok) {
                 // Handle successful login
                 console.log('Login successful:', data);
+
                 localStorage.setItem('token', data.token); // Store token in localStorage
                 navigate('/dashboard'); // Navigate to dashboard after login
+
             } else {
                 setError(data.message || 'Login failed. Please try again.');
             }
@@ -34,6 +36,10 @@ const Login = () => {
             setError('An error occurred. Please try again later.');
             console.error(err);
         }
+    };
+
+    const handleRegisterRedirect = () => {
+        navigate('/register'); // Navigate to the register page
     };
 
     return (
@@ -64,7 +70,7 @@ const Login = () => {
                 <button type="submit" className="login-button">Login</button>
             </form>
             <p className="register-link">
-                New user? <a href="/register">Register here</a>
+                New user? <span onClick={handleRegisterRedirect} style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>Register here</span>
             </p>
         </div>
     );
