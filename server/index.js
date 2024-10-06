@@ -18,6 +18,7 @@ connectDB();
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/chat', require('./routes/chat'));  
 
 // Home route
 app.get('/', (req, res) => {
