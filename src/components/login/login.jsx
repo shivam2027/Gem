@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
-//import { useHistory } from 'react-router-dom'; // Import useHistory for navigation
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from React Router v6
 import './Login.css'; // Import the CSS file
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    //const history = useHistory(); // Initialize history
+    const navigate = useNavigate(); // Initialize useNavigate
 
     const handleLogin = async (e) => {
         e.preventDefault();
         
         try {
-            const response = await fetch('/api/login', { // Adjust the endpoint as needed
+            const response = await fetch('http://localhost:3000/api/auth/login', { // Ensure correct endpoint
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email, password }), // Send email and password
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                // Handle successful login (e.g., redirect or store token)
+                // Handle successful login
                 console.log('Login successful:', data);
-                // Redirect to another page (e.g., dashboard)
-                history.push('/dashboard'); // Adjust the path as needed
+                localStorage.setItem('token', data.token); // Store token in localStorage
+                navigate('/dashboard'); // Navigate to dashboard after login
             } else {
                 setError(data.message || 'Login failed. Please try again.');
             }
