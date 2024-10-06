@@ -28,6 +28,47 @@
     margin: auto;
 }
 
+/* Button container styles */
+.button-container {
+    display: flex;
+    gap: 15px; /* Space between the buttons */
+}
+
+/* General button styles */
+.button {
+    padding: 10px 20px; /* Add padding for better click area */
+    background-color: #4b90ff; /* Background color */
+    color: white; /* Text color */
+    border: none; /* Remove default border */
+    border-radius: 25px; /* Rounded edges */
+    font-size: 16px; /* Font size */
+    font-weight: bold; /* Bold text */
+    cursor: pointer; /* Pointer on hover */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Slight shadow */
+}
+
+/* Hover effect */
+.button:hover {
+    background-color: #3b7bbf; /* Darken on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+/* Focus effect */
+.button:focus {
+    outline: none; /* Remove default outline */
+    box-shadow: 0 0 0 4px rgba(75, 144, 255, 0.5); /* Custom outline */
+}
+
+/* Media query for responsiveness */
+@media (max-width: 600px) {
+    .button {
+        padding: 8px 16px; /* Adjust padding for smaller screens */
+        font-size: 14px; /* Smaller font size */
+    }
+}
+
+
 /* Greeting section */
 .greet {
     margin: 50px 0px;
@@ -225,6 +266,40 @@
     transform: scale(1.02); 
 }
 
+/* Stop Speaking Button Styles */
+.speech-control button {
+    background-color: #f44336; /* Red color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    padding: 8px 12px; /* Padding */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Transition effects */
+}
+
+.speech-control button:hover {
+    background-color: #c62828; /* Darker red on hover */
+}
+
+.speech-control button:active {
+    transform: scale(0.95); /* Slightly shrink button when clicked */
+}
+
+/* Voice Icon Animation */
+.mic-icon {
+    transition: transform 0.2s ease; /* Smooth transition */
+}
+
+.mic-icon.active {
+    transform: scale(1.1); /* Scale up the icon */
+    color: red; /* Change color when active */
+}
+
+.mic-icon:not(.active) {
+    transition: transform 0.2s ease; /* Smooth transition back */
+}
+
+
 /* Media query adjustments */
 @media (max-width: 600px) {
     .main-bottom input {
@@ -244,20 +319,20 @@
         gap: 5px;
     }
 
-    .speech-control {
+    /* .speech-control {
         display: flex;
         align-items: center;
         margin-top: 10px;
     }
     
     .speech-control input[type="checkbox"] {
-        width: 20px; /* Adjust size as needed */
+        width: 20px;
         height: 20px;
     }
     
     .speech-control label {
-        color: black; /* Change to a contrasting color */
-        font-size: 16px; /* Adjust font size */
-    }
+        color: black;
+        font-size: 16px; 
+    } */
     
 }

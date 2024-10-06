@@ -1,0 +1,76 @@
+/* Register.css */
+
+/* Main container for registration */
+.register-container {
+    max-width: 400px;
+    height: 40%;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styles */
+.register-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333333;
+}
+
+/* Error and success message styles */
+.error-message {
+    color: #ff4d4d;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.success-message {
+    color: #4caf50;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Form styles */
+.register-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Input group styles */
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333333;
+}
+
+.input-group input {
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Button styles */
+.register-button {
+    padding: 10px 15px;
+    background: linear-gradient(45deg, #4b90ff, #ff5546);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.register-button:hover {
+    background: linear-gradient(45deg, #3b7bbf, #e04c36);
+    transform: scale(1.05);
+}

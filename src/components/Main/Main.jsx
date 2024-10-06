@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import './Main.css';
 import { assets } from '../../assets/assets';
 import { Context } from '../../context/Context';
+import { useNavigate } from 'react-router-dom';
 
 const Main = () => {
   const {
@@ -23,7 +24,7 @@ const Main = () => {
   
   const [speechQueue, setSpeechQueue] = useState([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
-
+  const navigate = useNavigate();
   // Function to sanitize and prepare text for speech
   const prepareTextForSpeech = (text) => {
     const div = document.createElement('div');
@@ -193,12 +194,26 @@ const Main = () => {
       recognition.start();
     }
   };
+  
+  const handleRegister = () => {
+    console.log("Register button clicked");
+    // Redirect to /register
+    navigate('/register'); 
+  };
 
+  const handleLogin = () => {
+    console.log("Login button clicked");
+    // Redirect to /login
+    navigate('/login'); 
+  };
   return (
     <div className="main">
       <div className="nav">
         <p>Gemini</p>
-        <img src={assets.user_icon} alt="" />
+        <div className="button-container">
+          <button className="button" onClick={handleRegister}>Register</button>
+          <button className="button" onClick={handleLogin}>Login</button>
+        </div>
       </div>
       <div className="main-container">
         {showResult && (
@@ -219,12 +234,11 @@ const Main = () => {
                   <div className="output-box">
                     {formatResultDataAsParagraphs(resultData)}
                     <div ref={endOfResultsRef} />
+                    <button onClick={copyToClipboard} className="copy-button">Copy</button>
                   </div>
                 )
               }
-              {resultData && !loading && (
-                <button onClick={copyToClipboard} className="copy-button">Copy</button>
-              )}
+              
             </div>
           </div>
         )}
