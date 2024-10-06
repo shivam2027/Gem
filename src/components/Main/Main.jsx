@@ -24,7 +24,40 @@ const Main = () => {
   
   const [speechQueue, setSpeechQueue] = useState([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [file, setFile] = useState(null); // To store the uploaded file
   const navigate = useNavigate();
+// Handle file selection
+const handleFileChange = (event) => {
+  const selectedFile = event.target.files[0];
+  if (selectedFile) {
+      setFile(selectedFile);
+      console.log('Selected file:', selectedFile);
+  }
+};
+
+// Function to handle file upload
+const handleFileUpload = async () => {
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+      const response = await fetch('http://localhost:3000/upload', {
+          method: 'POST',
+          body: formData,
+      });
+
+      if (response.ok) {
+          console.log('File uploaded successfully.');
+      } else {
+          console.error('File upload failed.');
+      }
+  } catch (error) {
+      console.error('Error uploading file:', error);
+  }
+};
+
   // Function to sanitize and prepare text for speech
   const prepareTextForSpeech = (text) => {
     const div = document.createElement('div');
@@ -283,7 +316,21 @@ const Main = () => {
               onKeyDown={handleKeyDown}
             />
             <div>
-              <img src={assets.gallery_icon} width={30} alt="" />
+            <label style={{ cursor: 'pointer' }}>
+            <img 
+              src={assets.gallery_icon} 
+              width={30} 
+              alt="Gallery" 
+              onClick={() => document.getElementById('file-input').click()} 
+            />
+            <input 
+              type="file" 
+              id="file-input" 
+              style={{ display: 'none' }} 
+              onChange={handleFileUpload} 
+              accept="image/*" // Accepts image files
+            />
+          </label>
               <img 
                 src={assets.mic_icon} 
                 width={30} 

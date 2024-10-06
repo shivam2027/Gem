@@ -14,6 +14,21 @@ const app = express();
 app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json()); // Body parser
 
+// Configure multer
+const storage = multer.memoryStorage(); // Store files in memory
+const upload = multer({ storage });
+
+// Endpoint to handle file uploads
+app.post('/upload', upload.single('file'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+    
+    // Here you can process the file, e.g., save it to a database or cloud storage
+    console.log('Uploaded file:', req.file);
+    res.send('File uploaded successfully.');
+});
+
 // Connect to MongoDB
 connectDB();
 
