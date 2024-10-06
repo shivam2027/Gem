@@ -235,6 +235,9 @@ const Main = () => {
                     {formatResultDataAsParagraphs(resultData)}
                     <div ref={endOfResultsRef} />
                     <button onClick={copyToClipboard} className="copy-button">Copy</button>
+                    {enableSpeech && (
+                   <button onClick={stopSpeaking} className="copy-button" style={{ marginLeft: '10px' }}>Stop Speaking</button>
+                   )}
                   </div>
                 )
               }
@@ -304,11 +307,9 @@ const Main = () => {
                 }} 
                 style={{ marginRight: '5px' }}
               />
-              <span style={{ fontSize: '16px', marginLeft: '5px' }}>Enable speech output</span>
+              
+              <span style={{ fontSize: '16px', marginLeft: '5px' ,color: 'grey'}}>Enable speech output</span>
             </label>
-            {enableSpeech && (
-              <button onClick={stopSpeaking} style={{ marginLeft: '10px' }}>Stop Speaking</button>
-            )}
           </div>
 
           <p className="bottom-info">

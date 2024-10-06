@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-//import { useHistory } from 'react-router-dom'; // Import useHistory for navigation
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import './Login.css'; // Import the CSS file
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    //const history = useHistory(); // Initialize history
+    const navigate = useNavigate(); // Initialize useNavigate
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -26,7 +26,7 @@ const Login = () => {
                 // Handle successful login (e.g., redirect or store token)
                 console.log('Login successful:', data);
                 // Redirect to another page (e.g., dashboard)
-                history.push('/dashboard'); // Adjust the path as needed
+                navigate('/dashboard'); // Adjust the path as needed
             } else {
                 setError(data.message || 'Login failed. Please try again.');
             }
@@ -34,6 +34,10 @@ const Login = () => {
             setError('An error occurred. Please try again later.');
             console.error(err);
         }
+    };
+
+    const handleRegisterRedirect = () => {
+        navigate('/register'); // Navigate to the register page
     };
 
     return (
@@ -64,7 +68,7 @@ const Login = () => {
                 <button type="submit" className="login-button">Login</button>
             </form>
             <p className="register-link">
-                New user? <a href="/register">Register here</a>
+                New user? <span onClick={handleRegisterRedirect} style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>Register here</span>
             </p>
         </div>
     );

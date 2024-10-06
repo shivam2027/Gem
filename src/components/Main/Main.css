@@ -269,7 +269,7 @@
 /* Stop Speaking Button Styles */
 .speech-control button {
     background-color: #f44336; /* Red color */
-    color: white; /* Text color */
+    color: rgb(146, 143, 143); /* Text color */
     border: none; /* No border */
     padding: 8px 12px; /* Padding */
     border-radius: 4px; /* Rounded corners */
