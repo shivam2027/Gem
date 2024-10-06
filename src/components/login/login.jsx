@@ -26,10 +26,11 @@ const Login = () => {
                 // Handle successful login
                 console.log('Login successful:', data);
 
+
                 localStorage.setItem('token', data.token); // Store token in localStorage
                 navigate('/dashboard'); // Navigate to dashboard after login
 
-            } else {
+           } else {
                 setError(data.message || 'Login failed. Please try again.');
             }
         } catch (err) {
