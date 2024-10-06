@@ -36,7 +36,7 @@ const Main = () => {
     return new Promise((resolve) => {
       const utterance = new SpeechSynthesisUtterance(sentence);
       utterance.lang = 'en-US';
-      utterance.rate = 1.5; // Increased rate for faster speech
+      utterance.rate = 1.4; // Increased rate for faster speech
       utterance.pitch = 1; // Normal pitch
 
       utterance.onend = () => {
