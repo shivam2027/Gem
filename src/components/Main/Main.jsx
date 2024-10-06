@@ -19,63 +19,58 @@ const Main = () => {
   const [recognition, setRecognition] = useState(null);
   const [isListening, setIsListening] = useState(false);
   const [enableSpeech, setEnableSpeech] = useState(true); // Control speech output
-  const [spokenText, setSpokenText] = useState(''); 
+  const [spokenText, setSpokenText] = useState('');
   
   const [speechQueue, setSpeechQueue] = useState([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
-  // Function to break text into sentences
-  const splitIntoSentences = (text) => {
-    return text.replace(/([.!?])\s*(?=[A-Z])/g, "$1|").split("|");
+  // Function to sanitize and prepare text for speech
+  const prepareTextForSpeech = (text) => {
+    const div = document.createElement('div');
+    div.innerHTML = text;
+    return div.textContent || div.innerText || ''; // Return the clean text
   };
 
-    // Function to sanitize and prepare text for speech
-    const prepareTextForSpeech = (text) => {
-      const div = document.createElement('div');
-      div.innerHTML = text;
-      return div.textContent || div.innerText || '';
-    };
-
-      // Function to speak a single sentence
+  // Function to speak a single sentence
   const speakSentence = (sentence) => {
     return new Promise((resolve) => {
       const utterance = new SpeechSynthesisUtterance(sentence);
       utterance.lang = 'en-US';
-      utterance.rate = 0.9; // Slightly slower rate for clarity
+      utterance.rate = 1.5; // Increased rate for faster speech
       utterance.pitch = 1; // Normal pitch
 
       utterance.onend = () => {
-        setTimeout(resolve, 300); // Add a short pause between sentences
+        resolve(); // Resolve promise when finished
       };
 
       speechSynthesis.speak(utterance);
     });
   };
 
-    // Function to process the speech queue
-    const processSpeechQueue = async () => {
-      if (speechQueue.length > 0 && !isSpeaking) {
-        setIsSpeaking(true);
-        const sentence = speechQueue[0];
-        await speakSentence(sentence);
-        setSpeechQueue((prevQueue) => prevQueue.slice(1));
-        setIsSpeaking(false);
-      }
-    };
+  // Function to process the speech queue
+  const processSpeechQueue = async () => {
+    if (speechQueue.length > 0 && !isSpeaking) {
+      setIsSpeaking(true);
+      const sentence = speechQueue[0];
+      await speakSentence(sentence);
+      setSpeechQueue((prevQueue) => prevQueue.slice(1));
+      setIsSpeaking(false);
+    }
+  };
 
-     // Effect to handle speech queue
+  // Effect to handle speech queue
   useEffect(() => {
     processSpeechQueue();
   }, [speechQueue, isSpeaking]);
 
-   // Modified function to speak text in chunks
-   const speakInChunks = (newText) => {
+  // Modified function to speak text in chunks
+  const speakInChunks = (newText) => {
     if (enableSpeech) {
       const unsaidText = newText.substring(spokenText.length);
       if (unsaidText.trim() === '') return;
 
       const cleanText = prepareTextForSpeech(unsaidText);
-      const sentences = splitIntoSentences(cleanText);
+      const sentences = cleanText.split(/(?<=[.!?])\s+/); // Split by sentence ending with punctuation
 
       setSpeechQueue((prevQueue) => [...prevQueue, ...sentences]);
       setSpokenText(newText);
@@ -89,8 +84,8 @@ const Main = () => {
     }
   }, [resultData, loading]);
 
-   // Function to stop speaking
-   const stopSpeaking = () => {
+  // Function to stop speaking
+  const stopSpeaking = () => {
     speechSynthesis.cancel();
     setSpeechQueue([]);
     setIsSpeaking(false);
@@ -199,13 +194,6 @@ const Main = () => {
     }
   };
 
-  // Function to strip HTML tags from the text
-  const sanitizeText = (text) => {
-    const div = document.createElement('div');
-    div.innerHTML = text;
-    return div.textContent || div.innerText || ''; // Return the clean text
-  };
-
   return (
     <div className="main">
       <div className="nav">
@@ -290,25 +278,24 @@ const Main = () => {
             </div>
           </div>
           <div className="speech-control" style={{ marginTop: '10px', color: 'white' }}>
-        <label>
-          <input 
-            type="checkbox" 
-            checked={enableSpeech} 
-            onChange={() => {
-              setEnableSpeech(!enableSpeech);
-              if (!enableSpeech) {
-                stopSpeaking();
-              }
-            }} 
-            style={{ marginRight: '5px' }}
-          />
-          <span style={{ fontSize: '16px', marginLeft: '5px' }}>Enable speech output</span>
-        </label>
-        {enableSpeech && (
-          <button onClick={stopSpeaking} style={{ marginLeft: '10px' }}>Stop Speaking</button>
-        )}
-      </div>
-        
+            <label>
+              <input 
+                type="checkbox" 
+                checked={enableSpeech} 
+                onChange={() => {
+                  setEnableSpeech(!enableSpeech);
+                  if (!enableSpeech) {
+                    stopSpeaking();
+                  }
+                }} 
+                style={{ marginRight: '5px' }}
+              />
+              <span style={{ fontSize: '16px', marginLeft: '5px' }}>Enable speech output</span>
+            </label>
+            {enableSpeech && (
+              <button onClick={stopSpeaking} style={{ marginLeft: '10px' }}>Stop Speaking</button>
+            )}
+          </div>
 
           <p className="bottom-info">
             Gemini may display inaccurate info, including about people, so double-check its responses. Your privacy and Gemini Apps
