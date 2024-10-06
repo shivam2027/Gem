@@ -1,36 +1,32 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import './Login.css'; // Import the CSS file
+import { useNavigate } from 'react-router-dom';
+import './Login.css';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         
         try {
-            const response = await fetch('http://localhost:3000/api/auth/login', { // Ensure correct endpoint
+            const response = await fetch('https://newgemini.netlify.app/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }), // Send email and password
+                body: JSON.stringify({ email, password }),
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                // Handle successful login
                 console.log('Login successful:', data);
-
-
                 localStorage.setItem('token', data.token); // Store token in localStorage
-                navigate('/dashboard'); // Navigate to dashboard after login
-
-           } else {
+                navigate('/'); // Navigate to home page after login
+            } else {
                 setError(data.message || 'Login failed. Please try again.');
             }
         } catch (err) {
@@ -40,7 +36,7 @@ const Login = () => {
     };
 
     const handleRegisterRedirect = () => {
-        navigate('/register'); // Navigate to the register page
+        navigate('/register');
     };
 
     return (

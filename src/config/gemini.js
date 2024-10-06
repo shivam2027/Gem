@@ -8,7 +8,7 @@ import {
 const MODEL_NAME = "gemini-1.5-pro"; // Example: Replace with the actual name of the higher model
 
 // Store your API KEY securely
-const API_KEY = "AIzaSyDs9V752GmrCKcwwcXLme81amKWs2xX3jU"; // Using an environment variable for security
+const API_KEY = "AIzaSyD_CksCnmJQOhrchjSJm5JWKQljF5tXD7Q"; // Using an environment variable for security
 
 async function runChat(prompt) {
   const genAI = new GoogleGenerativeAI(API_KEY);
