@@ -243,4 +243,21 @@
     .search-box div {
         gap: 5px;
     }
+
+    .speech-control {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    }
+    
+    .speech-control input[type="checkbox"] {
+        width: 20px; /* Adjust size as needed */
+        height: 20px;
+    }
+    
+    .speech-control label {
+        color: black; /* Change to a contrasting color */
+        font-size: 16px; /* Adjust font size */
+    }
+    
 }

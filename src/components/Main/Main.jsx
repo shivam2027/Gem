@@ -16,16 +16,95 @@ const Main = () => {
 
   const endOfResultsRef = useRef(null);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [recognition, setRecognition] = useState(null);
+  const [isListening, setIsListening] = useState(false);
+  const [enableSpeech, setEnableSpeech] = useState(true); // Control speech output
+  const [spokenText, setSpokenText] = useState(''); 
+  
+  const [speechQueue, setSpeechQueue] = useState([]);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  // Function to break text into sentences
+  const splitIntoSentences = (text) => {
+    return text.replace(/([.!?])\s*(?=[A-Z])/g, "$1|").split("|");
+  };
+
+    // Function to sanitize and prepare text for speech
+    const prepareTextForSpeech = (text) => {
+      const div = document.createElement('div');
+      div.innerHTML = text;
+      return div.textContent || div.innerText || '';
+    };
+
+      // Function to speak a single sentence
+  const speakSentence = (sentence) => {
+    return new Promise((resolve) => {
+      const utterance = new SpeechSynthesisUtterance(sentence);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9; // Slightly slower rate for clarity
+      utterance.pitch = 1; // Normal pitch
+
+      utterance.onend = () => {
+        setTimeout(resolve, 300); // Add a short pause between sentences
+      };
+
+      speechSynthesis.speak(utterance);
+    });
+  };
+
+    // Function to process the speech queue
+    const processSpeechQueue = async () => {
+      if (speechQueue.length > 0 && !isSpeaking) {
+        setIsSpeaking(true);
+        const sentence = speechQueue[0];
+        await speakSentence(sentence);
+        setSpeechQueue((prevQueue) => prevQueue.slice(1));
+        setIsSpeaking(false);
+      }
+    };
+
+     // Effect to handle speech queue
+  useEffect(() => {
+    processSpeechQueue();
+  }, [speechQueue, isSpeaking]);
+
+   // Modified function to speak text in chunks
+   const speakInChunks = (newText) => {
+    if (enableSpeech) {
+      const unsaidText = newText.substring(spokenText.length);
+      if (unsaidText.trim() === '') return;
+
+      const cleanText = prepareTextForSpeech(unsaidText);
+      const sentences = splitIntoSentences(cleanText);
+
+      setSpeechQueue((prevQueue) => [...prevQueue, ...sentences]);
+      setSpokenText(newText);
+    }
+  };
+
+  // Effect to handle resultData changes
+  useEffect(() => {
+    if (resultData && !loading) {
+      speakInChunks(resultData);
+    }
+  }, [resultData, loading]);
+
+   // Function to stop speaking
+   const stopSpeaking = () => {
+    speechSynthesis.cancel();
+    setSpeechQueue([]);
+    setIsSpeaking(false);
+  };
 
   const formatResultDataAsHTML = (data) => {
-    return { __html: data }; // Convert to an object for dangerouslySetInnerHTML
+    return { __html: data };
   };
-  
+
   const formatResultDataAsParagraphs = (data) => {
-    const codeRegex = /`{3}(.*?)`{3}/gs; // Updated regex for code blocks
+    const codeRegex = /`{3}(.*?)`{3}/gs;
     const result = [];
     const lines = data.split('\n');
-    
+
     lines.forEach((line, index) => {
       const codeMatch = line.match(codeRegex);
       if (codeMatch) {
@@ -45,7 +124,7 @@ const Main = () => {
         }
       }
     });
-    
+
     return <>{result}</>;
   };
 
@@ -59,6 +138,7 @@ const Main = () => {
     if (!input.trim()) return;
     onSent();
     setInput('');
+    setSpokenText(''); // Reset spoken text when a new search is started
   };
 
   const copyToClipboard = () => {
@@ -80,6 +160,52 @@ const Main = () => {
     }
   }, [resultData]);
 
+  // Initialize Speech Recognition
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.webkitSpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+      recognitionInstance.continuous = false;
+      recognitionInstance.interimResults = false;
+
+      recognitionInstance.onstart = () => {
+        setIsListening(true);
+        console.log('Voice recognition started. Speak into the microphone.');
+      };
+
+      recognitionInstance.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(transcript);
+        console.log('You said:', transcript);
+        handleNewSearch();
+      };
+
+      recognitionInstance.onerror = (event) => {
+        console.error('Error occurred in recognition: ', event.error);
+      };
+
+      setRecognition(recognitionInstance);
+    } else {
+      alert('Speech Recognition is not supported in this browser.');
+    }
+  }, []);
+
+  const toggleListening = () => {
+    if (isListening) {
+      recognition.stop();
+      setIsListening(false);
+    } else {
+      recognition.start();
+    }
+  };
+
+  // Function to strip HTML tags from the text
+  const sanitizeText = (text) => {
+    const div = document.createElement('div');
+    div.innerHTML = text;
+    return div.textContent || div.innerText || ''; // Return the clean text
+  };
+
   return (
     <div className="main">
       <div className="nav">
@@ -87,14 +213,12 @@ const Main = () => {
         <img src={assets.user_icon} alt="" />
       </div>
       <div className="main-container">
-
         {showResult && (
           <div className="result">
             <div className='result-title'>
               <img src={assets.user_icon} alt="" />
               <p>{recentPrompt}</p>
             </div>
-
             <div className="result-data">
               <img src={assets.gemini_icon} alt="" />
               {loading
@@ -105,12 +229,12 @@ const Main = () => {
                 </div>
                 : (
                   <div className="output-box">
-                    {formatResultDataAsParagraphs(resultData)} {/* This handles both cases */}
-                    <div ref={endOfResultsRef} /> {/* Add this ref to scroll to the bottom */}
+                    {formatResultDataAsParagraphs(resultData)}
+                    <div ref={endOfResultsRef} />
                   </div>
                 )
               }
-              {resultData && !loading && ( // Show the copy button only when there is resultData and loading is false
+              {resultData && !loading && (
                 <button onClick={copyToClipboard} className="copy-button">Copy</button>
               )}
             </div>
@@ -155,10 +279,37 @@ const Main = () => {
             />
             <div>
               <img src={assets.gallery_icon} width={30} alt="" />
-              <img src={assets.mic_icon} width={30} alt="" />
+              <img 
+                src={assets.mic_icon} 
+                width={30} 
+                alt="" 
+                onClick={toggleListening}
+                style={{ cursor: 'pointer', color: isListening ? 'red' : 'black' }}
+              />
               {input && <img onClick={handleNewSearch} src={assets.send_icon} width={30} alt="" />}
             </div>
           </div>
+          <div className="speech-control" style={{ marginTop: '10px', color: 'white' }}>
+        <label>
+          <input 
+            type="checkbox" 
+            checked={enableSpeech} 
+            onChange={() => {
+              setEnableSpeech(!enableSpeech);
+              if (!enableSpeech) {
+                stopSpeaking();
+              }
+            }} 
+            style={{ marginRight: '5px' }}
+          />
+          <span style={{ fontSize: '16px', marginLeft: '5px' }}>Enable speech output</span>
+        </label>
+        {enableSpeech && (
+          <button onClick={stopSpeaking} style={{ marginLeft: '10px' }}>Stop Speaking</button>
+        )}
+      </div>
+        
+
           <p className="bottom-info">
             Gemini may display inaccurate info, including about people, so double-check its responses. Your privacy and Gemini Apps
           </p>
