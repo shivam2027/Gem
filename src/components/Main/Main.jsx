@@ -19,13 +19,60 @@ const Main = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [recognition, setRecognition] = useState(null);
   const [isListening, setIsListening] = useState(false);
-  const [enableSpeech, setEnableSpeech] = useState(true); // Control speech output
+  const [enableSpeech, setEnableSpeech] = useState(true);
   const [spokenText, setSpokenText] = useState('');
-  
   const [speechQueue, setSpeechQueue] = useState([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [file, setFile] = useState(null); // To store the uploaded file
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]); // State to maintain chat history
   const navigate = useNavigate();
+
+  const handleInputChange = (e) => {
+    setInput(e.target.value); // Update input value
+  };
+
+
+  // const handleKeyPress = async (e) => {
+  //   if (e.key === 'Enter' && input.trim()) {
+  //     e.preventDefault(); // Prevent form submission
+
+  //     const userMessage = input.trim(); // Get the user message
+  //     try {
+  //       // Send message to backend
+  //       const response = await fetch('/chat', {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({
+  //           userId: 'USER_ID', // Replace with actual user ID
+  //           userMessage: userMessage,
+  //         }),
+  //       });
+
+  //       const data = await response.json();
+
+  //       if (response.ok) {
+  //         // Update chat history
+  //         setChatHistory((prev) => [...prev, { userMessage, aiResponse: data.aiResponse }]);
+  //         setInput(''); // Clear input field
+  //       } else {
+  //         console.error(data.error);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error sending message:', error);
+  //     }
+  //   }
+  // };
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true); // User is logged in
+    }
+  }, []);
+  const [file, setFile] = useState(null); // To store the uploaded file
+  // const navigate = useNavigate();
 // Handle file selection
 const handleFileChange = (event) => {
   const selectedFile = event.target.files[0];
@@ -236,16 +283,34 @@ const handleFileUpload = async () => {
 
   const handleLogin = () => {
     console.log("Login button clicked");
-    // Redirect to /login
+    // Simulating a successful login (replace with actual login logic)
+    setIsLoggedIn(true);
+    // Redirect to /login or wherever needed
     navigate('/login'); 
   };
+
+  const handleProfileClick = () => {
+    navigate('/profile'); // Redirect to /xyz when profile icon is clicked
+  };
+
   return (
     <div className="main">
       <div className="nav">
         <p>Gemini</p>
         <div className="button-container">
-          <button className="button" onClick={handleRegister}>Register</button>
-          <button className="button" onClick={handleLogin}>Login</button>
+          {isLoggedIn ? (
+            <img 
+              src={assets.user_icon} 
+              alt="Profile" 
+              onClick={handleProfileClick} 
+              style={{ cursor: 'pointer', width: '30px', height: '30px' }} 
+            />
+          ) : (
+            <>
+              <button className="button" onClick={handleRegister}>Register</button>
+              <button className="button" onClick={handleLogin}>Login</button>
+            </>
+          )}
         </div>
       </div>
       <div className="main-container">
@@ -269,12 +334,10 @@ const handleFileUpload = async () => {
                     <div ref={endOfResultsRef} />
                     <button onClick={copyToClipboard} className="copy-button">Copy</button>
                     {enableSpeech && (
-                   <button onClick={stopSpeaking} className="copy-button" style={{ marginLeft: '10px' }}>Stop Speaking</button>
-                   )}
+                      <button onClick={stopSpeaking} className="copy-button" style={{ marginLeft: '10px' }}>Stop Speaking</button>
+                    )}
                   </div>
-                )
-              }
-              
+                )}
             </div>
           </div>
         )}
@@ -309,7 +372,7 @@ const handleFileUpload = async () => {
         <div className="main-bottom">
           <div className="search-box">
             <input
-              onChange={(e) => setInput(e.target.value)}
+              onChange={handleInputChange}
               value={input}
               type="text"
               placeholder='Enter a prompt here'

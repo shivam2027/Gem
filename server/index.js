@@ -12,7 +12,7 @@ const app = express();
 
 // Middleware
 // app.use(cors());
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: 'https://newgemini.netlify.app/' }));
 app.use(express.json()); // Body parser
 
 // Configure multer
@@ -43,5 +43,5 @@ app.get('/', (req, res) => {
 });
 
 // Set the server port
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5137;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
