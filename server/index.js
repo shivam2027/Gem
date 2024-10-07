@@ -12,7 +12,7 @@ const app = express();
 
 // Middleware
 // app.use(cors());
-app.use(cors({ origin: 'https://newgemini.netlify.app/' }));
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json()); // Body parser
 
 // Configure multer
